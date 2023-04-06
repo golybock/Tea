@@ -6,13 +6,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import com.example.tea.R
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.databinding.FragmentDraftBinding
-import com.example.tea.databinding.FragmentHomeBinding
-import com.example.tea.ui.home.HomeViewModel
+import com.example.tea.models.Article
+import java.util.ArrayList
 
 class DraftFragment : Fragment() {
+
+    lateinit var adapter: ArticleItemRecyclerViewAdapter
+    private lateinit var articlesRv: RecyclerView
 
     private var _binding: FragmentDraftBinding? = null
 
@@ -26,20 +29,33 @@ class DraftFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val draftViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+            ViewModelProvider(this).get(DraftViewModel::class.java)
 
         _binding = FragmentDraftBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textDraft
-        draftViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        loadArticles()
+
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun initAdapter(articles: ArrayList<Article>) {
+        adapter = ArticleItemRecyclerViewAdapter(articles, activity)
+        articlesRv = binding.draftsList
+        articlesRv.adapter = adapter
+    }
+
+    private fun loadArticles() {
+
+        val artciles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+
+        // создаем адаптер
+        initAdapter(artciles)
+
     }
 }

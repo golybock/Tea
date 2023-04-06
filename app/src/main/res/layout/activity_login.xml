@@ -48,7 +48,7 @@
             android:layout_marginHorizontal="15dp"/>
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/editText_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -76,7 +76,7 @@
             android:layout_marginTop="5dp"/>
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/editText_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_edittext"
@@ -91,7 +91,7 @@
             android:autofillHints="password" />
 
         <CheckBox
-            android:id="@+id/checkBox2"
+            android:id="@+id/remind_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"

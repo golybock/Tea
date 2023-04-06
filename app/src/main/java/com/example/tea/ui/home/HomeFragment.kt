@@ -4,16 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
-import androidx.lifecycle.ViewModelProvider
-import com.example.tea.R
-import com.example.tea.articleItemFragment
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tea.ArticleItemRecyclerViewAdapter
+import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentHomeBinding
+import com.example.tea.models.Article
+import java.io.IOException
+
 
 class HomeFragment : Fragment() {
+
+    lateinit var adapter: ArticleItemRecyclerViewAdapter
+    private lateinit var articlesRv: RecyclerView
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -26,11 +29,10 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        loadArticles()
 
         return root
     }
@@ -38,5 +40,37 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun initAdapter(articles: List<Article>) {
+        adapter = ArticleItemRecyclerViewAdapter(articles, activity)
+        articlesRv = binding.homeList
+        articlesRv.adapter = adapter
+    }
+
+    private fun loadArticles() {
+        val  api : Api = Api(activity)
+
+        var articles : List<Article>? = null
+
+        try {
+            articles = api.getArticles()
+
+            // создаем адаптер
+            if (articles != null) {
+                initAdapter(articles)
+                return
+            }
+
+            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+
+            initAdapter(articles)
+
+        }
+        catch (e : IOException){
+            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+            initAdapter(articles)
+        }
+
     }
 }

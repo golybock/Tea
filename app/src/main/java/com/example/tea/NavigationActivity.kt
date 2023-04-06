@@ -1,13 +1,15 @@
 package com.example.tea
 
+import android.os.Build
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.tea.databinding.ActivityNavigationBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class NavigationActivity : AppCompatActivity() {
 
@@ -15,6 +17,15 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+
+        if (Build.VERSION.SDK_INT > 9) {
+            val policy = ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+        }
 
         binding = ActivityNavigationBinding.inflate(layoutInflater)
         setContentView(binding.root)

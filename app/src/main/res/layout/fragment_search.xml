@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.search.SearchFragment"
     android:orientation="vertical"
-    android:background="@color/middle_gray">
+    android:background="@color/light_gray">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +15,7 @@
         android:orientation="horizontal">
 
         <SearchView
+            android:id="@+id/search_view"
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_height="40dp"
@@ -35,11 +36,15 @@
 
     </LinearLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_weight="1"
+        android:name="com.example.tea.articleItemFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.example.tea.articleItemFragment"
-        tools:layout="@layout/article_fragment_item_list" />
+        android:layout_marginBottom="40dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:context=".ui.search.SearchFragment"
+        tools:listitem="@layout/artcile_fragment_item" />
 
 </LinearLayout>

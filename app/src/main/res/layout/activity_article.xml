@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ArticleActivity"
+    android:background="@color/light_gray">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="5dp"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Публикация"
+                android:textColor="@color/black"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rectangle_rounded"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_margin="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/article_image"
+                        android:layout_width="380dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="20dp"
+                        android:src="@drawable/ic_launcher" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/article_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Дата"
+                    android:textColor="@color/black_overlay"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="15dp"/>
+
+                <TextView
+                    android:id="@+id/article_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Тема"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginHorizontal="15dp"/>
+
+                <TextView
+                    android:id="@+id/article_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Текст"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="5dp"
+                    android:layout_marginTop="5dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/back_from_article_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Назад"
+                        android:textColor="@color/black"
+                        android:background="@drawable/rounded_button"
+                        app:backgroundTint="@color/light_crimson"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

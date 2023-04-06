@@ -10,7 +10,6 @@ import android.widget.TextView
 import com.example.tea.R
 import com.example.tea.databinding.FragmentCreateBinding
 import com.example.tea.databinding.FragmentHomeBinding
-import com.example.tea.ui.home.HomeViewModel
 
 class CreateFragment : Fragment() {
 
@@ -31,10 +30,6 @@ class CreateFragment : Fragment() {
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textCreate
-        createViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
         return root
     }
 

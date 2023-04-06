@@ -1,23 +1,26 @@
 package com.example.tea.ui.search
 
 import android.app.DatePickerDialog
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import com.example.tea.R
-import com.example.tea.databinding.FragmentProfileBinding
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tea.ArticleItemRecyclerViewAdapter
+import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentSearchBinding
-import com.example.tea.ui.profile.ProfileViewModel
-import org.w3c.dom.Text
+import com.example.tea.models.Article
+import java.io.IOException
 import java.util.*
 
+
 class SearchFragment : Fragment() {
+
+    lateinit var adapter: ArticleItemRecyclerViewAdapter
+    private lateinit var articlesRv: RecyclerView
 
     private var _binding: FragmentSearchBinding? = null
 
@@ -30,11 +33,15 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+
         val searchViewModel =
             ViewModelProvider(this).get(SearchViewModel::class.java)
 
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        loadArticles()
 
         val btn : Button = binding.startDateButton
         btn.setOnClickListener {
@@ -68,5 +75,36 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun initAdapter(articles: List<Article>) {
+        adapter = ArticleItemRecyclerViewAdapter(articles, activity)
+        articlesRv = binding.list
+        articlesRv.adapter = adapter
+    }
+
+    private fun loadArticles() {
+        val  api : Api = Api(activity)
+
+        var articles : List<Article>? = null
+
+        try {
+            articles = api.getArticles()
+
+            // создаем адаптер
+            if (articles != null) {
+                initAdapter(articles)
+                return
+            }
+
+            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+
+            initAdapter(articles)
+
+        }
+        catch (e : IOException){
+            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+            initAdapter(articles)
+        }
     }
 }
