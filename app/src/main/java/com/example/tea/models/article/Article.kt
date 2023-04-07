@@ -1,4 +1,4 @@
-package com.example.tea.models
+package com.example.tea.models.article
 
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
@@ -8,25 +8,25 @@ import java.util.*
 
 class Article(
     @SerializedName("Id")
-    val id: Int,
+    var id: Int = 0,
     @SerializedName("Title")
-    val title: String,
+    var title: String = "",
     @SerializedName("Description")
-    val description : String,
+    var description : String = "",
     @SerializedName("FirstName")
-    val firstName: String = "firstName",
+    var firstName: String = "firstName",
     @SerializedName("LastName")
-    val lastName: String = "lastName",
+    var lastName: String = "lastName",
     @SerializedName("MiddleName")
-    val middleName: String = "middleName",
+    var middleName: String = "middleName",
     @SerializedName("Login")
-    val login: String = "login",
+    var login: String = "login",
     @SerializedName("Email")
-    val email: String = "email",
+    var email: String = "email",
     @SerializedName("DateOfPublication")
-    val dateOfPublication: String = SimpleDateFormat("yyyy-mm-dd").format(Calendar.getInstance().time),
+    var dateOfPublication: String = "",
     @SerializedName("Photo")
-    val photo: String = "photo",
+    var photo: String = "photo",
     @SerializedName("Gender")
-    val gender: String = "gender"
+    var gender: String = "gender"
 )

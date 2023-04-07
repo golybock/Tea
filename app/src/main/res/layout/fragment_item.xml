@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/rectangle_rounded"
-    android:layout_margin="10dp"
     android:clickable="true">
 
     <LinearLayout

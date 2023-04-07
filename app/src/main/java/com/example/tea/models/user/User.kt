@@ -1,10 +1,10 @@
-package com.example.tea.models
+package com.example.tea.models.user
 
 import android.provider.ContactsContract.CommonDataKinds.Email
 import java.util.Date
 
 class User(
-    var id : Int = 0,
+    var id: Int = 0,
     var firstName: String = "",
     var lastName: String = "",
     var middleName : String = "",

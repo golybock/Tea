@@ -8,13 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tea.ArticleItemRecyclerViewAdapter
+import com.example.tea.DraftRecyclerViewAdapter
+import com.example.tea.database.DatabaseHelper
 import com.example.tea.databinding.FragmentDraftBinding
-import com.example.tea.models.Article
+import com.example.tea.models.article.Article
 import java.util.ArrayList
 
 class DraftFragment : Fragment() {
 
-    lateinit var adapter: ArticleItemRecyclerViewAdapter
+    lateinit var adapter: DraftRecyclerViewAdapter
     private lateinit var articlesRv: RecyclerView
 
     private var _binding: FragmentDraftBinding? = null
@@ -45,14 +47,16 @@ class DraftFragment : Fragment() {
     }
 
     private fun initAdapter(articles: ArrayList<Article>) {
-        adapter = ArticleItemRecyclerViewAdapter(articles, activity)
-        articlesRv = binding.draftsList
+        adapter = DraftRecyclerViewAdapter(articles, activity)
+        articlesRv = binding.list
         articlesRv.adapter = adapter
     }
 
     private fun loadArticles() {
 
-        val artciles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
+        val db = DatabaseHelper(activity, null)
+
+        val artciles = db.getArticles()
 
         // создаем адаптер
         initAdapter(artciles)

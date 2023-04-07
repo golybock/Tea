@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentHomeBinding
-import com.example.tea.models.Article
+import com.example.tea.models.article.Article
 import java.io.IOException
 
 
@@ -62,14 +63,14 @@ class HomeFragment : Fragment() {
                 return
             }
 
-            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
-
-            initAdapter(articles)
-
+            binding.homeNothingShow.text = "Нет публикаций"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.homeList.visibility = TextView.GONE
         }
         catch (e : IOException){
-            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
-            initAdapter(articles)
+            binding.homeNothingShow.text = "Не удалось загрузить публикации"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.homeList.visibility = TextView.GONE
         }
 
     }

@@ -3,21 +3,28 @@ package com.example.tea
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.*
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import com.example.tea.databinding.ArtcileFragmentItemBinding
+
+import com.example.tea.placeholder.PlaceholderContent.PlaceholderItem
+import com.example.tea.databinding.FragmentItemBinding
 import com.example.tea.models.article.Article
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.ArrayList
 
-class ArticleItemRecyclerViewAdapter(
+class DraftRecyclerViewAdapter(
     private val values: List<Article>,
     private val context: FragmentActivity?
-) : RecyclerView.Adapter<ArticleItemRecyclerViewAdapter.ViewHolder>(), Filterable {
+) : RecyclerView.Adapter<DraftRecyclerViewAdapter.ViewHolder>() {
 
     var filterList = ArrayList<Article>()
 
@@ -35,39 +42,6 @@ class ArticleItemRecyclerViewAdapter(
             )
         )
 
-    }
-
-    override fun getFilter(): Filter{
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val charSearch = constraint.toString()
-                if (charSearch.isEmpty()) {
-                    filterList = values as ArrayList<Article>
-                } else {
-                    val resultList = ArrayList<Article>()
-                    for (row in values) {
-                        if ((row.title.lowercase()
-                                .contains(charSearch.lowercase()) || row.login.lowercase()
-                                    .contains(charSearch.lowercase()))
-                        )
-                        {
-                            resultList.add(row)
-                        }
-                    }
-                    filterList = resultList
-                }
-                val filterResults = FilterResults()
-                filterResults.values = filterList
-                return filterResults
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filterList = values as ArrayList<Article>
-                notifyDataSetChanged()
-            }
-
-        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -91,7 +65,7 @@ class ArticleItemRecyclerViewAdapter(
         }
 
         holder.articleCard.setOnClickListener {
-            val intent = Intent(context, ArticleActivity::class.java)
+            val intent = Intent(context, DraftActivity::class.java)
             intent.putExtra("id", item.id)
             context?.startActivity(intent)
         }

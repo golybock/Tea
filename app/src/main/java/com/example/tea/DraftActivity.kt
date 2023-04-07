@@ -1,26 +1,33 @@
 package com.example.tea
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import com.example.tea.api.Api
+import com.example.tea.database.DatabaseHelper
+import com.example.tea.models.article.Article
+import com.example.tea.models.article.ArticleDomain
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class ArticleActivity : AppCompatActivity() {
+class DraftActivity : AppCompatActivity() {
+
+    lateinit var article : ArticleDomain
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article)
+        setContentView(R.layout.activity_draft)
 
         val arguments = intent.extras
         val id = arguments!!["id"].toString()
 
-        val backBtn : Button = findViewById(R.id.back_from_article_button);
+        val backBtn : Button = findViewById(R.id.back_from_draft_button);
+        val publish : Button = findViewById(R.id.publish_draft_button)
 
         getArticle(id)
 
@@ -28,11 +35,25 @@ class ArticleActivity : AppCompatActivity() {
             finish()
         }
 
+        publish.setOnClickListener {
+            val api = Api(this
+            )
+
+            val res = api.createArticle(article)
+            if(res){
+                Toast.makeText(this, "Опубликовано!", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            else{
+                Toast.makeText(this, "Какие-то данные неверны", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     fun getArticle(id : String){
-        val  api : Api = Api(this)
-        val article = api.getArticle(id)
+        val  db = DatabaseHelper(this, null)
+        article = db.getArticle(id)
 
         val theme : TextView = findViewById(R.id.article_theme)
         val text : TextView = findViewById(R.id.article_text)

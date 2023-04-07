@@ -91,14 +91,28 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <Button
-                        android:id="@+id/back_from_article_button"
-                        android:layout_width="0dp"
+                        android:id="@+id/back_from_draft_button"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Назад"
+                        android:textColor="@color/black"
+                        android:background="@drawable/rounded_button"
+                        app:backgroundTint="@color/light_crimson"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <Button
+                        android:id="@+id/publish_draft_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Опубликовать"
                         android:textColor="@color/black"
                         android:background="@drawable/rounded_button"
                         app:backgroundTint="@color/light_crimson"

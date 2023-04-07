@@ -23,15 +23,14 @@ android:orientation="vertical">
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/drafts_list"
-    android:layout_weight="1"
-    android:name="com.example.tea.articleItemFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="40dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.home.HomeFragment"
-    tools:listitem="@layout/artcile_fragment_item" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:name="com.example.tea.fragment_draft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:context=".fragment_draft"
+        tools:listitem="@layout/fragment_item" />
 
 </LinearLayout>

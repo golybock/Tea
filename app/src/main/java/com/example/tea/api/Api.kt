@@ -1,26 +1,20 @@
 package com.example.tea.api
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.os.Looper
-import android.widget.Toast
-import androidx.annotation.WorkerThread
 import androidx.fragment.app.FragmentActivity
 import com.example.tea.database.DatabaseHelper
-import com.example.tea.models.Article
-import com.example.tea.models.User
+import com.example.tea.models.article.Article
+import com.example.tea.models.article.ArticleDomain
+import com.example.tea.models.user.EditUser
+import com.example.tea.models.user.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.*
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
 import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.logging.Handler
-import kotlin.math.log
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class Api(val context: FragmentActivity?) {
@@ -29,10 +23,12 @@ class Api(val context: FragmentActivity?) {
     private val ARTICLES = "/api/Article/getArticles"
     private val ARTICLE = "/api/Article/getArticleById"
     private val LOGIN = "/api/User/login"
+    private val REGISTRATION = "/api/User/create"
+    private val UPDATEUSER = "/api/User/update"
     private val GETCLIENT = "/api/User/getUser"
+    private val CREATEARTICLE = "/api/Article/create"
     private val client = OkHttpClient()
 
-    @WorkerThread
     fun getArticles() : List<Article>? {
 
         val httpUrlConnection = URL(ENDPOINT + ARTICLES).openConnection() as HttpURLConnection
@@ -60,7 +56,33 @@ class Api(val context: FragmentActivity?) {
         return articles
     }
 
-    @WorkerThread
+    fun getArticles(search: String) : List<Article>? {
+
+        val httpUrlConnection = URL(ENDPOINT + "/api/Article/getArticleByAuthor" + search).openConnection() as HttpURLConnection
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "GET"
+            doInput = true
+        }
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            // show error toast
+            return null
+        }
+        val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+        var text: String = ""
+        streamReader.use {
+            text = it.readText()
+        }
+
+        val type = object : TypeToken<List<Article>>(){}.type
+
+        val articles = Gson().fromJson<List<Article>>(text, type)
+
+        httpUrlConnection.disconnect()
+
+        return articles
+    }
+
     fun login(login: String, password : String, save : Boolean) : Boolean {
         val httpUrlConnection = URL(ENDPOINT + LOGIN + "?Login=$login&Password=$password").openConnection() as HttpURLConnection
         val body = JSONObject().apply {
@@ -92,7 +114,103 @@ class Api(val context: FragmentActivity?) {
         return true
     }
 
-    @WorkerThread
+    fun createArticle(articleDomain: ArticleDomain) : Boolean {
+
+        articleDomain.user = getUser()!!.id
+        articleDomain.dateOfPublication = SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().time)
+
+        val httpUrlConnection = URL(ENDPOINT + CREATEARTICLE).openConnection() as HttpURLConnection
+        val json = Gson().toJson(articleDomain)
+
+        val token = getToken()
+
+        httpUrlConnection.setRequestProperty("Content-Type", "application/json")
+        httpUrlConnection.setRequestProperty("Authorization", "bearer " + token)
+
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "POST"
+            doOutput = true
+        }
+
+
+        httpUrlConnection.outputStream.use { os ->
+            val input: ByteArray = json.toByteArray()
+            os.write(input, 0, input.size)
+        }
+
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            // show error toast
+            return false
+        }
+
+        httpUrlConnection.disconnect()
+
+        return true
+    }
+
+    fun registration(user : User, save : Boolean) : Boolean {
+        val httpUrlConnection = URL(ENDPOINT + REGISTRATION).openConnection() as HttpURLConnection
+        val json = Gson().toJson(user)
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "POST"
+            doOutput = true
+        }.addRequestProperty("Content-Type", "application/json")
+
+
+        httpUrlConnection.outputStream.use { os ->
+            val input: ByteArray = json.toByteArray()
+            os.write(input, 0, input.size)
+        }
+
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            // show error toast
+            return false
+        }
+
+        val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+        var token: String = ""
+        streamReader.use {
+            token = it.readText()
+            if(save){
+                val db = DatabaseHelper(context,null)
+                db.addProfile(user.login, user.password)
+            }
+        }
+
+        httpUrlConnection.disconnect()
+
+        return true
+    }
+
+
+    fun updateUser(editUser : EditUser, id : Int) : Boolean {
+        val httpUrlConnection = URL(ENDPOINT + UPDATEUSER + id).openConnection() as HttpURLConnection
+        val json = Gson().toJson(editUser)
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "PUT"
+            doOutput = true
+        }.addRequestProperty("Content-Type", "application/json")
+
+
+        httpUrlConnection.outputStream.use { os ->
+            val input: ByteArray = json.toByteArray()
+            os.write(input, 0, input.size)
+        }
+
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            // show error toast
+            return false
+        }
+
+        httpUrlConnection.disconnect()
+
+        return true
+    }
+
+
     fun getToken() : String? {
 
         val db = DatabaseHelper(context,null)
@@ -124,7 +242,7 @@ class Api(val context: FragmentActivity?) {
         return token
     }
 
-    @WorkerThread
+
     fun getArticle(id : String) : Article? {
 
         val httpUrlConnection = URL(ENDPOINT + ARTICLE + id).openConnection() as HttpURLConnection
@@ -152,7 +270,7 @@ class Api(val context: FragmentActivity?) {
         return articles[0]
     }
 
-    @WorkerThread
+
     fun getUser() : User? {
 
         val token = getToken()

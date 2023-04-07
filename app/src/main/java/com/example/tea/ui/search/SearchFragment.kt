@@ -6,13 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.SearchView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentSearchBinding
-import com.example.tea.models.Article
+import com.example.tea.models.article.Article
 import java.io.IOException
 import java.util.*
 
@@ -43,31 +45,26 @@ class SearchFragment : Fragment() {
 
         loadArticles()
 
-        val btn : Button = binding.startDateButton
-        btn.setOnClickListener {
-            //Inflate the dialog as custom view
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
+        val search = binding.searchView
 
-
-            val dpd = activity?.let { it1 ->
-                DatePickerDialog(
-                    it1,
-                    DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-
-                    },
-                    year,
-                    month,
-                    day
-                )
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    loadArticles(query)
+                }
+                return false
             }
 
-            if (dpd != null) {
-                dpd.show()
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // if query text is change in that case we
+                // are filtering our adapter with
+                // new text on below line.
+                if (newText != null) {
+                    loadArticles(newText)
+                }
+                return false
             }
-        }
+        })
 
         return root
     }
@@ -97,14 +94,41 @@ class SearchFragment : Fragment() {
                 return
             }
 
-            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
-
-            initAdapter(articles)
+            binding.homeNothingShow.text = "Нет публикаций"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.list.visibility = TextView.GONE
 
         }
         catch (e : IOException){
-            articles = arrayListOf<Article>(Article(1, "aboba", "beboba"), Article(2, "abebo", "дора"))
-            initAdapter(articles)
+            binding.homeNothingShow.text = "Ничего не найдено"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.list.visibility = TextView.GONE
+        }
+    }
+
+    private fun loadArticles(search: String) {
+        val  api : Api = Api(activity)
+
+        var articles : List<Article>? = null
+
+        try {
+            articles = api.getArticles(search)
+
+            // создаем адаптер
+            if (articles != null) {
+                initAdapter(articles)
+                return
+            }
+
+            binding.homeNothingShow.text = "Нет публикаций"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.list.visibility = TextView.GONE
+
+        }
+        catch (e : IOException){
+            binding.homeNothingShow.text = "Ничего не найдено"
+            binding.homeNothingShow.visibility = TextView.VISIBLE
+            binding.list.visibility = TextView.GONE
         }
     }
 }

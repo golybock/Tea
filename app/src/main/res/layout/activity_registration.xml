@@ -46,6 +46,7 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        android:id="@+id/image_registration"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_margin="20dp"
@@ -74,6 +75,7 @@
                             android:orientation="horizontal">
 
                             <Button
+                                android:id="@+id/registration_male_button"
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:layout_margin="5dp"
@@ -85,6 +87,7 @@
                                 app:backgroundTint="@color/white" />
 
                             <Button
+                                android:id="@+id/registration_female_button"
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:layout_margin="5dp"
@@ -97,6 +100,7 @@
                         </LinearLayout>
 
                         <Button
+                            android:id="@+id/choose_image_button"
                             android:layout_width="115dp"
                             android:layout_height="50dp"
                             android:layout_margin="5dp"
@@ -124,7 +128,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_lastName"
+                    android:id="@+id/last_name_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -151,7 +155,7 @@
                     android:layout_marginTop="5dp"/>
 
                 <EditText
-                    android:id="@+id/editText_name"
+                    android:id="@+id/first_name_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_edittext"
@@ -159,7 +163,7 @@
                     android:textColor="@color/black"
                     android:textSize="22sp"
                     android:padding="6dp"
-                    android:inputType="textPassword"
+                    android:inputType="text"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginVertical="5dp"
                     android:layout_marginTop="5dp" />
@@ -176,7 +180,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_middleName"
+                    android:id="@+id/middle_name_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -202,7 +206,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_birthDate"
+                    android:id="@+id/birth_date_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -211,7 +215,7 @@
                     android:textColor="@color/black"
                     android:background="@drawable/rounded_edittext"
                     android:backgroundTint="@color/light_gray"
-                    android:inputType="textPersonName"
+                    android:inputType="date"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginVertical="5dp"
                     android:layout_marginTop="5dp" />
@@ -228,7 +232,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_login_reg"
+                    android:id="@+id/login_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -254,10 +258,9 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_password"
+                    android:id="@+id/password_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
                     android:textSize="22sp"
                     android:padding="6dp"
                     android:textColor="@color/black"
@@ -280,7 +283,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_login"
+                    android:id="@+id/email_registration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -295,7 +298,7 @@
                     android:layout_marginTop="5dp" />
 
                 <CheckBox
-                    android:id="@+id/checkBox2"
+                    android:id="@+id/remind_me_checkbox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"

@@ -47,10 +47,11 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        android:id="@+id/create_image"
                         android:layout_width="150dp"
-                        android:layout_height="150dp"
+                        android:layout_height="200dp"
                         android:layout_margin="20dp"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/baseline_hide_image_24" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -70,6 +71,7 @@
                             android:textStyle="bold" />
 
                         <Button
+                            android:id="@+id/create_choose_image"
                             android:layout_width="115dp"
                             android:layout_height="50dp"
                             android:layout_margin="5dp"
@@ -78,14 +80,15 @@
                             android:textColor="@color/black"
                             android:textSize="12sp"
                             android:textStyle="bold"
-                            android:backgroundTint="@color/crimson" />
+                            android:backgroundTint="@color/white" />
 
                         <Button
+                            android:id="@+id/draft_button"
                             android:layout_width="115dp"
                             android:layout_height="50dp"
                             android:layout_margin="5dp"
                             android:background="@drawable/rounded_button"
-                            android:backgroundTint="@color/crimson"
+                            app:backgroundTint="@color/white"
                             android:text="Черновик"
                             android:textColor="@color/black"
                             android:textSize="12sp"
@@ -108,7 +111,7 @@
                     android:layout_marginHorizontal="15dp"/>
 
                 <EditText
-                    android:id="@+id/editText_title"
+                    android:id="@+id/title_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -136,7 +139,7 @@
                     android:layout_marginTop="5dp"/>
 
                 <EditText
-                    android:id="@+id/editText_description"
+                    android:id="@+id/description_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_edittext"
@@ -156,7 +159,7 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/cancel_button"
+                        android:id="@+id/cancel_create_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -170,7 +173,7 @@
                         android:layout_marginBottom="15dp"/>
 
                     <Button
-                        android:id="@+id/registration_button"
+                        android:id="@+id/create_button"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
