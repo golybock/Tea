@@ -41,6 +41,10 @@ class DraftActivity : AppCompatActivity() {
 
             val res = api.createArticle(article)
             if(res){
+
+                val db = DatabaseHelper(this, null)
+                db.deleteDraft(article.id)
+
                 Toast.makeText(this, "Опубликовано!", Toast.LENGTH_SHORT).show()
                 finish()
             }

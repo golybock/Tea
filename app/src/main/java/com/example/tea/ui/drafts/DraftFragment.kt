@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.DraftRecyclerViewAdapter
@@ -57,6 +58,13 @@ class DraftFragment : Fragment() {
         val db = DatabaseHelper(activity, null)
 
         val artciles = db.getArticles()
+
+        if(artciles?.count() == 0){
+            binding.draftNothingShow.text = "Нет публикаций"
+            binding.draftNothingShow.visibility = TextView.VISIBLE
+            binding.list.visibility = TextView.GONE
+            return
+        }
 
         // создаем адаптер
         initAdapter(artciles)

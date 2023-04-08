@@ -27,6 +27,7 @@ class Api(val context: FragmentActivity?) {
     private val UPDATEUSER = "/api/User/update"
     private val GETCLIENT = "/api/User/getUser"
     private val CREATEARTICLE = "/api/Article/create"
+    private val DATES = "/api/Article/getArticleByDates"
     private val client = OkHttpClient()
 
     fun getArticles() : List<Article>? {
@@ -59,6 +60,33 @@ class Api(val context: FragmentActivity?) {
     fun getArticles(search: String) : List<Article>? {
 
         val httpUrlConnection = URL(ENDPOINT + "/api/Article/getArticleByAuthor" + search).openConnection() as HttpURLConnection
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "GET"
+            doInput = true
+        }
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            // show error toast
+            return null
+        }
+        val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+        var text: String = ""
+        streamReader.use {
+            text = it.readText()
+        }
+
+        val type = object : TypeToken<List<Article>>(){}.type
+
+        val articles = Gson().fromJson<List<Article>>(text, type)
+
+        httpUrlConnection.disconnect()
+
+        return articles
+    }
+
+    fun getArticles(startDate : String, endDate : String) : List<Article>? {
+
+        val httpUrlConnection = URL(ENDPOINT + DATES + "?dateStart=$startDate&dateEnd=$endDate").openConnection() as HttpURLConnection
         httpUrlConnection.apply {
             connectTimeout = 10000 // 10 seconds
             requestMethod = "GET"

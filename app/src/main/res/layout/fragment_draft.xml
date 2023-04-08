@@ -33,4 +33,11 @@ android:orientation="vertical">
         tools:context=".fragment_draft"
         tools:listitem="@layout/fragment_item" />
 
+    <TextView
+        android:id="@+id/draft_nothing_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:visibility="gone" />
+
 </LinearLayout>

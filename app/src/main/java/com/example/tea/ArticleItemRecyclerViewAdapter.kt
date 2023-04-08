@@ -76,11 +76,22 @@ class ArticleItemRecyclerViewAdapter(
         holder.contentView.text = item.description
         holder.userNameView.text = item.login
 
-        val text = "2022-01-06 20:30:45"
-        val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val localDateTime = LocalDateTime.parse(text, pattern)
+        try {
+            val text = item.dateOfPublication
+            val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+            val localDateTime = LocalDateTime.parse(text, pattern)
 
-        holder.articleDate.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+            holder.articleDate.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+        }
+        catch (e : java.lang.Exception){
+            val text = item.dateOfPublication
+            val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val localDateTime = LocalDateTime.parse(text, pattern)
+
+            holder.articleDate.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+        }
+
+
 
         if(item.photo.length > 100){
             holder.articleImageView.visibility = ImageView.VISIBLE

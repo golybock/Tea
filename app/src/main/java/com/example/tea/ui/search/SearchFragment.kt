@@ -46,25 +46,37 @@ class SearchFragment : Fragment() {
         loadArticles()
 
         val search = binding.searchView
+        val clear = binding.clearSearchButton
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
+                    if(query.isEmpty()){
+                        loadArticles()
+                    }
                     loadArticles(query)
                 }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // if query text is change in that case we
-                // are filtering our adapter with
-                // new text on below line.
+
                 if (newText != null) {
-                    loadArticles(newText)
+                    if(newText.isEmpty()){
+                        loadArticles()
+                    }
+                    else{
+                        loadArticles(newText)
+                    }
                 }
                 return false
             }
         })
+
+        clear.setOnClickListener {
+            search.setQuery("", true)
+            loadArticles()
+        }
 
         return root
     }
@@ -88,9 +100,18 @@ class SearchFragment : Fragment() {
         try {
             articles = api.getArticles()
 
+            if(articles?.count() == 0){
+                binding.homeNothingShow.text = "Нет публикаций"
+                binding.homeNothingShow.visibility = TextView.VISIBLE
+                binding.list.visibility = TextView.GONE
+                return
+            }
+
             // создаем адаптер
             if (articles != null) {
                 initAdapter(articles)
+                binding.homeNothingShow.visibility = TextView.GONE
+                binding.list.visibility = TextView.VISIBLE
                 return
             }
 
@@ -114,9 +135,18 @@ class SearchFragment : Fragment() {
         try {
             articles = api.getArticles(search)
 
+            if(articles?.count() == 0){
+                binding.homeNothingShow.text = "Нет публикаций"
+                binding.homeNothingShow.visibility = TextView.VISIBLE
+                binding.list.visibility = TextView.GONE
+                return
+            }
+
             // создаем адаптер
             if (articles != null) {
                 initAdapter(articles)
+                binding.homeNothingShow.visibility = TextView.GONE
+                binding.list.visibility = TextView.VISIBLE
                 return
             }
 

@@ -94,6 +94,7 @@ class DatabaseHelper(
         val cursor = db.rawQuery("SELECT * FROM article WHERE id = $id", null)
 
         if(cursor.moveToFirst()){
+            article.id = cursor.getInt(0)
             article.title = cursor.getString(1)
             article.description = cursor.getString(2)
             article.photo = cursor.getString(3)
