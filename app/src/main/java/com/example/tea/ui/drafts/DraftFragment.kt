@@ -42,6 +42,12 @@ class DraftFragment : Fragment() {
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        loadArticles()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

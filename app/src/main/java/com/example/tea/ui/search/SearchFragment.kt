@@ -15,7 +15,12 @@ import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentSearchBinding
 import com.example.tea.models.article.Article
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 
 
@@ -23,6 +28,12 @@ class SearchFragment : Fragment() {
 
     lateinit var adapter: ArticleItemRecyclerViewAdapter
     private lateinit var articlesRv: RecyclerView
+
+    var articles : List<Article>? = null
+
+    lateinit var nothingShow : TextView
+
+    lateinit var list : RecyclerView
 
     private var _binding: FragmentSearchBinding? = null
 
@@ -43,18 +54,21 @@ class SearchFragment : Fragment() {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        loadArticles()
-
         val search = binding.searchView
         val clear = binding.clearSearchButton
+
+        nothingShow = binding.homeNothingShow
+        list = binding.list
+
+        loadArticlesAsync()
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
                     if(query.isEmpty()){
-                        loadArticles()
+                        loadArticlesAsync()
                     }
-                    loadArticles(query)
+                    loadArticlesAsync(query)
                 }
                 return false
             }
@@ -63,10 +77,10 @@ class SearchFragment : Fragment() {
 
                 if (newText != null) {
                     if(newText.isEmpty()){
-                        loadArticles()
+                        loadArticlesAsync()
                     }
                     else{
-                        loadArticles(newText)
+                        loadArticlesAsync(newText)
                     }
                 }
                 return false
@@ -88,77 +102,108 @@ class SearchFragment : Fragment() {
 
     private fun initAdapter(articles: List<Article>) {
         adapter = ArticleItemRecyclerViewAdapter(articles, activity)
-        articlesRv = binding.list
+        articlesRv = list
         articlesRv.adapter = adapter
     }
 
-    private fun loadArticles() {
-        val  api : Api = Api(activity)
+    private fun loadArticlesAsync(){
+        val th = loadArticles()
+        th.start()
+        th.join()
 
-        var articles : List<Article>? = null
-
-        try {
-            articles = api.getArticles()
-
-            if(articles?.count() == 0){
-                binding.homeNothingShow.text = "Нет публикаций"
-                binding.homeNothingShow.visibility = TextView.VISIBLE
-                binding.list.visibility = TextView.GONE
-                return
-            }
-
-            // создаем адаптер
-            if (articles != null) {
-                initAdapter(articles)
-                binding.homeNothingShow.visibility = TextView.GONE
-                binding.list.visibility = TextView.VISIBLE
-                return
-            }
-
-            binding.homeNothingShow.text = "Нет публикаций"
-            binding.homeNothingShow.visibility = TextView.VISIBLE
-            binding.list.visibility = TextView.GONE
-
+        // создаем адаптер
+        if (articles != null) {
+            initAdapter(articles!!)
         }
-        catch (e : IOException){
-            binding.homeNothingShow.text = "Ничего не найдено"
-            binding.homeNothingShow.visibility = TextView.VISIBLE
-            binding.list.visibility = TextView.GONE
+        else{
+            nothingShow.text = "Нет публикаций"
+            nothingShow.visibility = TextView.VISIBLE
+            list.visibility = TextView.GONE
         }
     }
 
-    private fun loadArticles(search: String) {
-        val  api : Api = Api(activity)
+    private fun loadArticlesAsync(search: String){
+        val th = loadArticles(search)
+        th.start()
+        th.join()
 
-        var articles : List<Article>? = null
-
-        try {
-            articles = api.getArticles(search)
-
-            if(articles?.count() == 0){
-                binding.homeNothingShow.text = "Нет публикаций"
-                binding.homeNothingShow.visibility = TextView.VISIBLE
-                binding.list.visibility = TextView.GONE
-                return
-            }
-
-            // создаем адаптер
-            if (articles != null) {
-                initAdapter(articles)
-                binding.homeNothingShow.visibility = TextView.GONE
-                binding.list.visibility = TextView.VISIBLE
-                return
-            }
-
-            binding.homeNothingShow.text = "Нет публикаций"
-            binding.homeNothingShow.visibility = TextView.VISIBLE
-            binding.list.visibility = TextView.GONE
-
+        // создаем адаптер
+        if (articles != null) {
+            initAdapter(articles!!)
         }
-        catch (e : IOException){
-            binding.homeNothingShow.text = "Ничего не найдено"
-            binding.homeNothingShow.visibility = TextView.VISIBLE
-            binding.list.visibility = TextView.GONE
+        else{
+            nothingShow.text = "Нет публикаций"
+            nothingShow.visibility = TextView.VISIBLE
+            list.visibility = TextView.GONE
         }
+    }
+
+    private fun loadArticles(): Thread {
+        val thread = Thread{
+            val  api : Api = Api(activity)
+
+            try {
+                val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/Article/getArticles").openConnection() as HttpURLConnection
+                httpUrlConnection.apply {
+                    connectTimeout = 10000 // 10 seconds
+                    requestMethod = "GET"
+                    doInput = true
+                }
+                if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+                    articles = null
+                }
+                val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+                var text: String = ""
+                streamReader.use {
+                    text = it.readText()
+                }
+
+                val type = object : TypeToken<List<Article>>(){}.type
+
+                articles = Gson().fromJson<List<Article>>(text, type)
+
+                httpUrlConnection.disconnect()
+            }
+            catch (e : IOException){
+
+            }
+        }
+        return thread
+    }
+
+    private fun loadArticles(search: String): Thread {
+        val thread = Thread{
+            val  api : Api = Api(activity)
+
+            var articles : List<Article>? = null
+
+            try {
+                val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/Article/getArticleByAuthor" + search).openConnection() as HttpURLConnection
+                httpUrlConnection.apply {
+                    connectTimeout = 10000 // 10 seconds
+                    requestMethod = "GET"
+                    doInput = true
+                }
+                if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+                    articles = null
+                }
+                val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+                var text: String = ""
+                streamReader.use {
+                    text = it.readText()
+                }
+
+                val type = object : TypeToken<List<Article>>(){}.type
+
+                articles = Gson().fromJson<List<Article>>(text, type)
+
+                httpUrlConnection.disconnect()
+
+            }
+            catch (e : IOException){
+            }
+        }
+        return thread
+
     }
 }

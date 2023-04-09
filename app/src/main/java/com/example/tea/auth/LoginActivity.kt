@@ -1,23 +1,19 @@
 package com.example.tea.auth
 
-import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.StrictMode
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import androidx.tv.material3.NavigationDrawer
+import androidx.appcompat.app.AppCompatActivity
 import com.example.tea.NavigationActivity
 import com.example.tea.R
-import com.example.tea.api.Api
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.tea.database.DatabaseHelper
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 class LoginActivity : AppCompatActivity() {
 
@@ -33,11 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
         StrictMode.setThreadPolicy(policy);
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            tryLog()
-        }
-
-        Thread.sleep(1000)
+        tryLogin()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -50,9 +42,7 @@ class LoginActivity : AppCompatActivity() {
         registrationBtn = findViewById<Button>(R.id.registration_button);
 
         loginBtn.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                loginAsync()
-            }
+            loginAsync()
         }
 
         registrationBtn.setOnClickListener {
@@ -62,37 +52,81 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun tryLogin() : Boolean{
-        val api = Api(this)
-        var res : String? = api.getToken()
+    private fun tryLogin(){
+        val thread = Thread{
+            val db = DatabaseHelper(this,null)
+            var user = db.getGuest()
+            if(user.id == 0){
+                user = db.getProfile()
+            }
 
-        return res != null
-    }
+            val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/User/login" + "?Login=${user.login}&Password=${user.password}").openConnection() as HttpURLConnection
 
-    private fun tryLog(){
-        if(tryLogin()){
-            val intent = Intent(this, NavigationActivity::class.java)
-            startActivity(intent)
-            finish()
+            httpUrlConnection.apply {
+                connectTimeout = 10000 // 10 seconds
+                requestMethod = "POST"
+                doOutput = true
+            }
+
+            if (httpUrlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                httpUrlConnection.disconnect()
+                val intent = Intent(this, NavigationActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+
         }
+        thread.start()
+            thread.join()
     }
+
 
     private fun loginAsync(){
-        val res = login(login.text.toString(), password.text.toString(), saveCheckBox.isChecked)
+        Thread{
+            val res = login(login.text.toString(), password.text.toString(), saveCheckBox.isChecked)
 
-        if(res){
-            val intent = Intent(this, NavigationActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-        else{
-            Toast.makeText(this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show()
-        }
+            if(res){
+                val intent = Intent(this, NavigationActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else{
+                this.runOnUiThread(Runnable {
+                    Toast.makeText(this, "Неверный логин или пароль", Toast.LENGTH_SHORT).show()
+                })
+
+            }
+        }.start()
     }
 
-    private fun login(login: String, password : String, save : Boolean) : Boolean{
-        val api = Api(this)
-        val res = api.login(login, password, save)
-        return res
+    fun login(login: String, password : String, save : Boolean) : Boolean {
+        val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/User/login" + "?Login=$login&Password=$password").openConnection() as HttpURLConnection
+        httpUrlConnection.apply {
+            connectTimeout = 10000 // 10 seconds
+            requestMethod = "POST"
+            doOutput = true
+        }
+
+        if (httpUrlConnection.responseCode != HttpURLConnection.HTTP_OK) {
+            return false
+        }
+
+        val streamReader = InputStreamReader(httpUrlConnection.inputStream)
+        var token: String = ""
+        streamReader.use {
+            token = it.readText()
+            if(save){
+                val db = DatabaseHelper(this,null)
+                db.addProfile(login, password)
+            }
+            else{
+                val db = DatabaseHelper(this,null)
+                db.addGuest(login, password)
+            }
+        }
+
+        httpUrlConnection.disconnect()
+
+        return true
     }
 }

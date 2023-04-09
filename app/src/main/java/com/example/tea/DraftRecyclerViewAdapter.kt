@@ -14,8 +14,6 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import com.example.tea.databinding.ArtcileFragmentItemBinding
 
-import com.example.tea.placeholder.PlaceholderContent.PlaceholderItem
-import com.example.tea.databinding.FragmentItemBinding
 import com.example.tea.models.article.Article
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

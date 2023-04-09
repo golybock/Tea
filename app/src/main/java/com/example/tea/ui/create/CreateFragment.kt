@@ -1,13 +1,17 @@
 package com.example.tea.ui.create
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -74,7 +78,7 @@ class CreateFragment : Fragment() {
         draftButton.setOnClickListener {
             isDraft = !isDraft
             if(isDraft){
-                draftButton.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.crimson)));
+                draftButton.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.green)));
             }
             else{
                 draftButton.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.white)));
@@ -89,7 +93,9 @@ class CreateFragment : Fragment() {
                     .setMessage("Вы уверены?")
                     .setCancelable(true)
                     .setPositiveButton("Да") { _, _ ->
-                        image.setImageBitmap(null)
+                        image.setImageBitmap(
+                            BitmapFactory.decodeResource(requireContext().resources,
+                                R.drawable.baseline_hide_image_24))
                         tittle.setText("")
                         description.setText("")
                     }
@@ -102,15 +108,7 @@ class CreateFragment : Fragment() {
         }
 
         chooseBtn.setOnClickListener{
-
-            if (checkPermission()) {
-                val camera = Intent("android.media.action.IMAGE_CAPTURE")
-                startActivityForResult(camera, 1888)
-
-            } else {
-                requestPermission();
-            }
-
+            imagePickDialog()
         }
 
         saveBtn.setOnClickListener{
@@ -135,7 +133,9 @@ class CreateFragment : Fragment() {
 
                 Toast.makeText(activity, "Сохранено как черновик", Toast.LENGTH_SHORT).show()
 
-                image.setImageBitmap(null)
+                image.setImageBitmap(
+                    BitmapFactory.decodeResource(requireContext().resources,
+                    R.drawable.baseline_hide_image_24))
                 tittle.setText("")
                 description.setText("")
             }
@@ -145,7 +145,9 @@ class CreateFragment : Fragment() {
                 val res = api.createArticle(articleDomain)
                 if(res){
                     Toast.makeText(activity, "Сохранено", Toast.LENGTH_SHORT).show()
-                    image.setImageBitmap(null)
+                    image.setImageBitmap(
+                        BitmapFactory.decodeResource(requireContext().resources,
+                            R.drawable.baseline_hide_image_24))
                     tittle.setText("")
                     description.setText("")
                 }
@@ -161,23 +163,55 @@ class CreateFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1888 && resultCode == AppCompatActivity.RESULT_OK) {
+        if (requestCode == 1888 && resultCode == RESULT_OK) {
             imageBitmap = data?.extras!!["data"] as Bitmap?
             image.setImageBitmap(imageBitmap)
+        }
+        if (resultCode == RESULT_OK && requestCode == 100) {
+            val uri = data?.data
+            if(uri!=null){
+                val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
+                imageBitmap = bitmap
+                image.setImageBitmap(imageBitmap)
+            }
+
         }
     }
 
     private fun checkPermission(): Boolean {
-        return activity?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) } === PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) === PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
-        activity?.let {
-            ActivityCompat.requestPermissions(
-                it, arrayOf<String>(Manifest.permission.CAMERA),
-                200
-            )
+        ActivityCompat.requestPermissions(
+            requireActivity(), arrayOf<String>(Manifest.permission.CAMERA),
+            200
+        )
+    }
+
+    private fun imagePickDialog() {
+        val options = arrayOf("Камера", "Галерея")
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Выберите изображение")
+        builder.setItems(options) { dialogInterface, i ->
+            if (i == 0) {
+                if (checkPermission()) {
+                    val camera = Intent("android.media.action.IMAGE_CAPTURE")
+                    startActivityForResult(camera, 1888)
+
+                } else {
+                    requestPermission();
+                }
+            } else {
+                pickFromStorage()
+            }
         }
+        builder.create().show()
+    }
+
+    private fun pickFromStorage() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, 100)
     }
 
     override fun onDestroyView() {

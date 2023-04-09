@@ -237,6 +237,34 @@
 
                         </LinearLayout>
 
+
+                        <LinearLayout
+                            android:id="@+id/my_articles_profile_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:layout_marginHorizontal="15dp"
+                            android:clickable="true">
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/outline_person_24" />
+
+                            <TextView
+                                android:id="@+id/textView21"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Мои записи"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="20sp"
+                                android:layout_marginHorizontal="15dp"/>
+
+
+                        </LinearLayout>
+
                         <LinearLayout
                             android:id="@+id/logout_profile_button"
                             android:layout_width="wrap_content"

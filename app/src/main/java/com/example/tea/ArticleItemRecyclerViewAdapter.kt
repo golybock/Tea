@@ -92,7 +92,6 @@ class ArticleItemRecyclerViewAdapter(
         }
 
 
-
         if(item.photo.length > 100){
             holder.articleImageView.visibility = ImageView.VISIBLE
             holder.articleImageView.setImageBitmap(convert(item.photo))

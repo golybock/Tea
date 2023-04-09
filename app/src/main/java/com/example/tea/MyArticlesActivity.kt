@@ -1,15 +1,12 @@
-package com.example.tea.ui.home
+package com.example.tea
 
+import android.annotation.SuppressLint
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tea.ArticleItemRecyclerViewAdapter
 import com.example.tea.api.Api
+import com.example.tea.database.DatabaseHelper
 import com.example.tea.databinding.FragmentHomeBinding
 import com.example.tea.models.article.Article
 import com.google.gson.Gson
@@ -19,15 +16,10 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-
-class HomeFragment : Fragment() {
+class MyArticlesActivity : AppCompatActivity() {
 
     lateinit var adapter: ArticleItemRecyclerViewAdapter
     private lateinit var articlesRv: RecyclerView
-
-    private var _binding: FragmentHomeBinding? = null
-
-    private val binding get() = _binding!!
 
     lateinit var nothingShow : TextView
 
@@ -35,30 +27,18 @@ class HomeFragment : Fragment() {
 
     var articles : List<Article>? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_my_articles)
 
-        nothingShow = binding.homeNothingShow
-        list = binding.homeList
+        nothingShow = findViewById(R.id.my_nothing_show)
 
-    loadArticlesAsync()
-
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        loadArticlesAsync()
     }
 
     private fun initAdapter(articles: List<Article>) {
-        adapter = ArticleItemRecyclerViewAdapter(articles, activity)
-        articlesRv = binding.homeList
+        adapter = ArticleItemRecyclerViewAdapter(articles, this)
+        articlesRv = findViewById(R.id.my_list)
         articlesRv.adapter = adapter
     }
 
@@ -79,11 +59,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadArticles(): Thread {
-        val thread = Thread{
-            val  api : Api = Api(activity)
 
+        val db = DatabaseHelper(this, null)
+        var author = db.getGuest()
+
+        if(author.id == 0){
+            author = db.getProfile()
+        }
+
+        val thread = Thread{
             try {
-                val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/Article/getArticles").openConnection() as HttpURLConnection
+                val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/Article/getArticleByAuthor" + author.login).openConnection() as HttpURLConnection
                 httpUrlConnection.apply {
                     connectTimeout = 10000 // 10 seconds
                     requestMethod = "GET"

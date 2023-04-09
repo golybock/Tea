@@ -23,7 +23,9 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import com.example.tea.ArticleActivity
 import com.example.tea.EditProfileActivity
+import com.example.tea.MyArticlesActivity
 import com.example.tea.R
 import com.example.tea.api.Api
 import com.example.tea.databinding.FragmentProfileBinding
@@ -86,14 +88,27 @@ class ProfileFragment : Fragment() {
         val femaleButton : Button = binding.profileFemaleGender
 
         if (user != null) {
-            val text = user.dateOfBirth.replace("T", " ")
-            val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            val localDateTime = LocalDateTime.parse(text, pattern)
+
+            user.dateOfBirth = user.dateOfBirth.replace("T", " ")
+
+            try {
+                val text = user.dateOfBirth
+                val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                val localDateTime = LocalDateTime.parse(text, pattern)
+
+                dateOfBirth.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+            }
+            catch (e : java.lang.Exception){
+                val text = user.dateOfBirth
+                val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val localDateTime = LocalDateTime.parse(text, pattern)
+
+                dateOfBirth.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+            }
 
             firstName.text = "Имя: " + user.firstName.toString()
             lastName.text = "Фамилия: " + user.lastName.toString()
             middleName.text = "Отчество: " + user.middleName.toString()
-            dateOfBirth.text = "День рождения: " + localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
             login.text = "Логин: " + user.login.toString()
             email.text = "Почта: " + user.email.toString()
 
@@ -156,17 +171,35 @@ class ProfileFragment : Fragment() {
 
         val maleButton : Button = binding.profileManGender
         val femaleButton : Button = binding.profileFemaleGender
+        val myArticles : LinearLayout = binding.myArticlesProfileButton
+
+        myArticles.setOnClickListener {
+            val intent = Intent(context, MyArticlesActivity::class.java)
+            context?.startActivity(intent)
+        }
 
         if (user != null) {
 
-            val text = user?.dateOfBirth?.replace("T", " ")
-            val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            val localDateTime = LocalDateTime.parse(text, pattern)
+            user.dateOfBirth = user.dateOfBirth.replace("T", " ")
+
+            try {
+                val text = user.dateOfBirth
+                val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                val localDateTime = LocalDateTime.parse(text, pattern)
+
+                dateOfBirth.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+            }
+            catch (e : java.lang.Exception){
+                val text = user.dateOfBirth
+                val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val localDateTime = LocalDateTime.parse(text, pattern)
+
+                dateOfBirth.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
+            }
 
             firstName.text = "Имя: " + user.firstName.toString()
             lastName.text = "Фамилия: " + user.lastName.toString()
             middleName.text = "Отчество: " + user.middleName.toString()
-            dateOfBirth.text = "День рождения: " + localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
             login.text = "Логин: " + user.login.toString()
             email.text = "Почта: " + user.email.toString()
 

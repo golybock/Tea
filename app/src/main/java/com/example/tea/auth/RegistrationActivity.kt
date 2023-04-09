@@ -1,25 +1,23 @@
 package com.example.tea.auth
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.tea.NavigationActivity
 import com.example.tea.R
 import com.example.tea.api.Api
 import com.example.tea.models.user.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -105,27 +103,29 @@ class RegistrationActivity : AppCompatActivity() {
         }
 
         cancelBtn.setOnClickListener {
-            finish()
+            this.let {
+                val builder = AlertDialog.Builder(it)
+                builder.setTitle("Отменить редактирование?")
+                    .setMessage("Вы уверены?")
+                    .setCancelable(true)
+                    .setPositiveButton("Да") { _, _ ->
+                        finish()
+                    }
+                    .setNegativeButton(
+                        "Нет, остаться"
+                    ) { _, _ ->
+                    }
+                builder.create()
+            }
         }
 
         chooseImageBtn.setOnClickListener{
-
-            if (checkPermission()) {
-                val camera = Intent("android.media.action.IMAGE_CAPTURE")
-                startActivityForResult(camera, 1888)
-
-            } else {
-                requestPermission();
-            }
-
+            imagePickDialog()
         }
 
         registrationBtn.setOnClickListener {
 
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                regAsync()
-            }
+            regAsync()
 
             Thread.sleep(1000)
 
@@ -138,6 +138,15 @@ class RegistrationActivity : AppCompatActivity() {
         if (requestCode == 1888 && resultCode == RESULT_OK) {
             imageBitmap = data?.extras!!["data"] as Bitmap?
             imageView.setImageBitmap(imageBitmap)
+        }
+        if (resultCode == RESULT_OK && requestCode == 100) {
+            val uri = data?.data
+            if(uri!=null){
+                val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+                imageBitmap = bitmap
+                imageView.setImageBitmap(imageBitmap)
+            }
+
         }
     }
 
@@ -185,6 +194,31 @@ class RegistrationActivity : AppCompatActivity() {
         else{
             Toast.makeText(this, "Неверные данные", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun imagePickDialog() {
+        val options = arrayOf("Камера", "Галерея")
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Выберите изображение")
+        builder.setItems(options) { dialogInterface, i ->
+            if (i == 0) {
+                if (checkPermission()) {
+                    val camera = Intent("android.media.action.IMAGE_CAPTURE")
+                    startActivityForResult(camera, 1888)
+
+                } else {
+                    requestPermission();
+                }
+            } else {
+                pickFromStorage()
+            }
+        }
+        builder.create().show()
+    }
+
+    private fun pickFromStorage() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, 100)
     }
 
     private fun reg(user : User, save : Boolean) : Boolean{

@@ -90,7 +90,12 @@ class ArticleActivity : AppCompatActivity() {
                 date.text = localDateTime.dayOfMonth.toString() + " " + localDateTime.month + " " + localDateTime.year.toString()
             }
 
-            image.setImageBitmap(convert(article!!.photo))
+            if(article.photo.length > 100){
+                image.setImageBitmap(convert(article!!.photo))
+            }
+            else{
+                image.visibility = ImageView.GONE
+            }
         }
         else{
             theme.text = "Не удалось загрузить"

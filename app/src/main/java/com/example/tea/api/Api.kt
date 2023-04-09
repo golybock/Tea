@@ -25,14 +25,14 @@ class Api(val context: FragmentActivity?) {
     private val LOGIN = "/api/User/login"
     private val REGISTRATION = "/api/User/create"
     private val UPDATEUSER = "/api/User/update"
-    private val GETCLIENT = "/api/User/getUser"
+    private val GETUSER = "/api/User/getUser"
     private val CREATEARTICLE = "/api/Article/create"
     private val DATES = "/api/Article/getArticleByDates"
     private val client = OkHttpClient()
 
     fun getArticles() : List<Article>? {
 
-        val httpUrlConnection = URL(ENDPOINT + ARTICLES).openConnection() as HttpURLConnection
+        val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/Article/getArticles").openConnection() as HttpURLConnection
         httpUrlConnection.apply {
             connectTimeout = 10000 // 10 seconds
             requestMethod = "GET"
@@ -112,10 +112,7 @@ class Api(val context: FragmentActivity?) {
     }
 
     fun login(login: String, password : String, save : Boolean) : Boolean {
-        val httpUrlConnection = URL(ENDPOINT + LOGIN + "?Login=$login&Password=$password").openConnection() as HttpURLConnection
-        val body = JSONObject().apply {
-            put("", "")
-        }
+        val httpUrlConnection = URL("http://188.164.136.18:8888" + "/api/User/login" + "?Login=$login&Password=$password").openConnection() as HttpURLConnection
         httpUrlConnection.apply {
             connectTimeout = 10000 // 10 seconds
             requestMethod = "POST"
@@ -242,7 +239,10 @@ class Api(val context: FragmentActivity?) {
     fun getToken() : String? {
 
         val db = DatabaseHelper(context,null)
-        val user = db.getProfile()
+        var user = db.getGuest()
+        if(user.id == 0){
+            user = db.getProfile()
+        }
 
         val httpUrlConnection = URL(ENDPOINT + LOGIN + "?Login=${user.login}&Password=${user.password}").openConnection() as HttpURLConnection
         val body = JSONObject().apply {
@@ -303,7 +303,7 @@ class Api(val context: FragmentActivity?) {
 
         val token = getToken()
 
-        val httpUrlConnection = URL(ENDPOINT + GETCLIENT + token).openConnection() as HttpURLConnection
+        val httpUrlConnection = URL(ENDPOINT + GETUSER + token).openConnection() as HttpURLConnection
 
         httpUrlConnection.apply {
             connectTimeout = 10000 // 10 seconds
