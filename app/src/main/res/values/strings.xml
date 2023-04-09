@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tea</string>
+    <string name="app_name">Articles</string>
     <string name="title_activity_splach">SplachActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
